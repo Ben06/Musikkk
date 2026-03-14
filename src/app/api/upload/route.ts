@@ -31,7 +31,7 @@ export async function POST(request: Request) {
       const blob = await put(pathname, file, {
         access: "private",
         token,
-      });
+      } as { access: "private"; token: string });
       return NextResponse.json({ url: blob.url });
     } catch (err) {
       const message =
