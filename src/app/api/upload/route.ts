@@ -30,9 +30,13 @@ export async function POST(request: Request) {
       const pathname = `uploads/${randomUUID()}.${ext}`;
       // 0.27 types only allow access: "public"; our store is private so we pass private at runtime
       const blob = await put(pathname, file, {
-        access: "private",
+
+
+        access: "public",
+
         token,
-      } as { access: "public"; token?: string });
+
+      });
       return NextResponse.json({ url: blob.url });
     } catch (err) {
       const message =
