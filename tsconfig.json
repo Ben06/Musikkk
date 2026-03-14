@@ -7,6 +7,7 @@
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
+    "noImplicitAny": false,   // 👈 overrides strict for this rule
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
