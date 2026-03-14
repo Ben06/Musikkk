@@ -28,10 +28,11 @@ export async function POST(request: Request) {
       const { put } = await import("@vercel/blob");
       const ext = file.name.split(".").pop() || "bin";
       const pathname = `uploads/${randomUUID()}.${ext}`;
+      // 0.27 types only allow access: "public"; our store is private so we pass private at runtime
       const blob = await put(pathname, file, {
         access: "private",
         token,
-      } as { access: "private"; token: string });
+      } as { access: "public"; token?: string });
       return NextResponse.json({ url: blob.url });
     } catch (err) {
       const message =
