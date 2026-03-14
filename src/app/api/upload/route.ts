@@ -21,11 +21,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "File too large" }, { status: 400 });
   }
 
-  // Use Vercel Blob if configured
+  // Use Vercel Blob if configured (server-side = no CORS issues)
   if (process.env.BLOB_READ_WRITE_TOKEN) {
     try {
       const { put } = await import("@vercel/blob");
-      const blob = await put(file.name, file, { access: "public" });
+      const ext = file.name.split(".").pop() || "bin";
+      const pathname = `uploads/${randomUUID()}.${ext}`;
+      const blob = await put(pathname, file, { access: "public" });
       return NextResponse.json({ url: blob.url });
     } catch {
       return NextResponse.json(
