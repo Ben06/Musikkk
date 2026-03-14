@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { upload } from "@vercel/blob/client";
+// import { upload } from "@vercel/blob/client";
 import { Button } from "@/components/ui/button";
 import { Upload, X, FileAudio, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -49,10 +49,20 @@ export function FileUpload({
     setUploading(true);
 
     try {
-      const blob = await upload(file.name, file, {
-        access: "public",
-        handleUploadUrl: "/api/upload/token"
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/upload/token", {
+        method: "POST",
+        body: formData,
       });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || `Upload failed with status ${res.status}`);
+      }
+
+      const blob = await res.json();
 
       onChange(blob.url);
       if (type === "image") setPreview(blob.url);
