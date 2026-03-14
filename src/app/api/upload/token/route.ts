@@ -15,7 +15,7 @@ export async function POST(request: Request) {
       body,
       request,
       onBeforeGenerateToken: async (pathname) => {
-        // Validate the upload
+        // Validate the upload (auth already checked above)
         return {
           allowedContentTypes: [
             "audio/mpeg",
@@ -27,6 +27,7 @@ export async function POST(request: Request) {
             "image/webp",
           ],
           maximumSizeInBytes: 50 * 1024 * 1024, // 50MB
+          addRandomSuffix: true,
         };
       },
       onUploadCompleted: async ({ blob }) => {
@@ -37,9 +38,15 @@ export async function POST(request: Request) {
 
     return NextResponse.json(jsonResponse);
   } catch (error) {
+    const message = (error as Error).message;
+    // Missing token or server config → 500 so client can show "server error"
+    const isServerError =
+      message.includes("BLOB_READ_WRITE_TOKEN") ||
+      message.includes("token") ||
+      message.includes("environment");
     return NextResponse.json(
-      { error: (error as Error).message },
-      { status: 400 }
+      { error: message },
+      { status: isServerError ? 500 : 400 }
     );
   }
 }
