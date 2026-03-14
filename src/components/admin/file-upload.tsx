@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { upload } from "@vercel/blob/client";
 import { Upload, X, FileAudio, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -36,7 +37,6 @@ export function FileUpload({
       return;
     }
 
-    // Prevent double uploads (e.g. strict mode, double-click)
     if (uploading) return;
     setUploading(true);
 
@@ -49,19 +49,13 @@ export function FileUpload({
     }
 
     try {
-      // Server upload: browser → our API → Blob. No cross-origin PUT, no CORS.
-      // Vercel server body limit ~4.5MB; larger files will fail with 413.
-      const formData = new FormData();
-      formData.set("file", file);
-      const res = await fetch("/api/upload", { method: "POST", body: formData });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(data?.error ?? `Upload failed (${res.status})`);
-      }
-      const url = data?.url;
-      if (!url) throw new Error("No URL returned");
-      onChange(url);
-      if (type === "image") setPreview(url);
+      const blob = await upload(file.name, file, {
+        access: "public",
+        handleUploadUrl: "/api/upload/token",
+      });
+
+      onChange(blob.url);
+      if (type === "image") setPreview(blob.url);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Unknown error";
       console.error("Upload error:", msg);
