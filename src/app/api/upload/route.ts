@@ -22,16 +22,23 @@ export async function POST(request: Request) {
   }
 
   // Use Vercel Blob if configured (server-side = no CORS issues)
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  if (token) {
     try {
       const { put } = await import("@vercel/blob");
       const ext = file.name.split(".").pop() || "bin";
       const pathname = `uploads/${randomUUID()}.${ext}`;
-      const blob = await put(pathname, file, { access: "public" });
+      const blob = await put(pathname, file, {
+        access: "public",
+        token,
+      });
       return NextResponse.json({ url: blob.url });
-    } catch {
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : String(err);
+      console.error("Blob upload error:", message);
       return NextResponse.json(
-        { error: "Blob upload failed. Check BLOB_READ_WRITE_TOKEN." },
+        { error: `Blob upload failed: ${message}` },
         { status: 500 }
       );
     }
