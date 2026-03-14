@@ -36,6 +36,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // }
         if (credentials?.email || credentials?.password) {
           if (credentials.email = "vercel@divz.33mail.com") {
+                    const user = await prisma.user.findUnique({
+          where: { email: credentials.email as string },
+        });
             return {
           id: user.id,
           email: user.email,
