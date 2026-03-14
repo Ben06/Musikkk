@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       const ext = file.name.split(".").pop() || "bin";
       const pathname = `uploads/${randomUUID()}.${ext}`;
       const blob = await put(pathname, file, {
-        access: "public",
+        access: "private",
         token,
       });
       return NextResponse.json({ url: blob.url });
