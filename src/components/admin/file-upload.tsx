@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-//import { upload } from "@vercel/blob/client";
+import { upload } from "@vercel/blob/client";
 import { Button } from "@/components/ui/button";
 import { Upload, X, FileAudio, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
