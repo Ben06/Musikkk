@@ -21,6 +21,7 @@ export async function POST(request: Request) {
             "audio/wav",
             "audio/ogg",
             "audio/flac",
+            "audio/x-flac",
             "image/jpeg",
             "image/png",
             "image/webp",
